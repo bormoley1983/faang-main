@@ -1,0 +1,36 @@
+[submodule "faang-infra"]
+	path = faang-infra
+	url = https://github.com/bormoley1983/faang-infra
+	branch = dev-local
+[submodule "faang-achievement_service"]
+	path = faang-achievement_service
+	url = https://github.com/bormoley1983/faang-achievement_service
+	branch = dev-local
+[submodule "faang-url_shortener_service"]
+	path = faang-url_shortener_service
+	url = https://github.com/bormoley1983/faang-url_shortener_service
+	branch = dev-local
+[submodule "faang-post_service"]
+	path = faang-post_service
+	url = https://github.com/bormoley1983/faang-post_service
+	branch = dev-local
+[submodule "faang-project_service"]
+	path = faang-project_service
+	url = https://github.com/bormoley1983/faang-project_service
+	branch = dev-local
+[submodule "faang-payment_service"]
+	path = faang-payment_service
+	url = https://github.com/bormoley1983/faang-payment_service
+	branch = dev-local
+[submodule "faang-notification_service"]
+	path = faang-notification_service
+	url = https://github.com/bormoley1983/faang-notification_service
+	branch = dev-local
+[submodule "faang-analytics_service"]
+	path = faang-analytics_service
+	url = https://github.com/bormoley1983/faang-analytics_service
+	branch = dev-local
+[submodule "faang-account_service"]
+	path = faang-account_service
+	url = https://github.com/bormoley1983/faang-account_service
+	branch = dev-local
