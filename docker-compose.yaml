@@ -29,7 +29,7 @@ services:
     command: /init-postgres.sh
   
   redis:
-    image: redis/redis-stack:latest
+    image: redis:latest
     ports:
       - "6379:6379"
       - "8001:8001"
@@ -86,7 +86,7 @@ services:
       wait"
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:9.2.4
+    image: docker.elastic.co/elasticsearch/elasticsearch:9.3.0
     environment:
       - discovery.type=single-node
       - http.host=0.0.0.0
