@@ -1,6 +1,6 @@
 # FAANG Social Network Platform
 
-Welcome to the **FAANG Social Network**, a high-performance, microservices-based social platform built with Java 21, Spring Boot 4, Kafka, and Kubernetes.
+Welcome to the **FAANG Social Network**, a high-performance, microservices-based social platform built with Java 25, Spring Boot 4, Kafka, and Kubernetes.
 
 This repository serves as the **Main Entry Point** for the entire ecosystem, orchestrating the deployment and integration of all sub-services.
 
@@ -12,7 +12,7 @@ This platform is designed to be up and running with a single command using Docke
 
 ### Prerequisites
 - Docker & Docker Compose
-- Java 21 (optional, for local builds)
+- Java 25 (optional, for local builds)
 - Git
 
 ### Installation
@@ -48,16 +48,17 @@ Contains Kubernetes manifests, database initialization scripts, and CI/CD utilit
 
 ## ☸️ Kubernetes & DevOps
 
-The platform is production-ready with a full CI/CD pipeline and Kubernetes configurations.
+The platform includes CI workflows and a GitOps-oriented delivery pipeline for the account service.
 
-*   **CI/CD**: Managed via `Jenkinsfile` in the root.
-*   **Deployment**: ArgoCD/Rancher ready using manifests in `faang-infra/k8s`.
+*   **CI**: Each service repository builds and tests pull requests and `dev-local` pushes.
+*   **Delivery**: The root `Jenkinsfile` publishes an immutable account-service image and updates its Kustomize tag.
+*   **Deployment**: ArgoCD syncs manifests in `faang-infra/k8s`; Jenkins does not apply workloads directly.
 *   **Observability**: Integrated Spring Boot Actuator with readiness/liveness probes.
 
 ---
 
 ## 🛠️ Tech Stack
-- **Backend**: Java 21, Spring Boot 4.0.2, Spring Cloud (Feign, Gateway)
+- **Backend**: Java 25, Spring Boot 4.0.2, Spring Cloud (Feign, Gateway)
 - **Database**: PostgreSQL (Relational), Redis (Cache/Messaging)
 - **Message Broker**: Apache Kafka
 - **Search & Storage**: Elasticsearch 9.2, Minio (S3 Compatible)
