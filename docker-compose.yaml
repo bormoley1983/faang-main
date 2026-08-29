@@ -78,6 +78,7 @@ services:
     volumes:
       - kafka_data:/var/lib/kafka/data
       - ./faang-infra/init-kafka.sh:/init-kafka.sh
+      - ./faang-infra/replay-analytics-dlt.sh:/replay-analytics-dlt.sh
     command: >
       sh -c "
       /etc/kafka/docker/run &
