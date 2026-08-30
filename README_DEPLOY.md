@@ -16,7 +16,7 @@ This document is intentionally written as a runbook:
 ### Ownership model
 
 - Each service repository owns its own CI build.
-- The deployment repository owns the Kubernetes desired state.
+- The `faang-infra` repository owns the Kubernetes desired state. ArgoCD watches it directly on the explicit `dev-local` branch; it does not resolve the `faang-main` submodule path. The parent submodule pointer is updated only for deliberate integration snapshots, not after each service delivery.
 - Only the changed service image tag or digest gets updated, so only that deployment rolls.
 
 ### Platform model

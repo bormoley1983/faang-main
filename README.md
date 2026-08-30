@@ -54,7 +54,7 @@ The platform includes CI workflows and a GitOps-oriented delivery pipeline for t
 
 *   **CI**: Each service repository builds and tests pull requests and pushes to `dev-local`.
 *   **Delivery**: The root `Jenkinsfile` publishes an immutable account-service image and updates its Kustomize tag.
-*   **Deployment**: ArgoCD syncs manifests in `faang-infra/k8s`; Jenkins does not apply workloads directly.
+*   **Deployment**: ArgoCD watches the `faang-infra` repository's explicit `dev-local` branch and syncs `k8s/overlays/homelab`; Jenkins updates that same repository and never applies workloads directly. The `faang-main` submodule pointer is updated only for deliberate integration snapshots and is not ArgoCD's deployment revision.
 *   **Observability**: Integrated Spring Boot Actuator with readiness/liveness probes.
 
 ---
@@ -63,7 +63,7 @@ The platform includes CI workflows and a GitOps-oriented delivery pipeline for t
 - **Backend**: Java 25, Spring Boot 4.1.1, Spring Cloud (Feign, Gateway)
 - **Database**: PostgreSQL 18 (Relational), Redis (Cache/Messaging)
 - **Message Broker**: Apache Kafka
-- **Search & Storage**: Elasticsearch 9.3 / Kibana 9.2.4, Minio (S3 Compatible)
+- **Search & Storage**: Elasticsearch / Kibana 9.5.2, Minio (S3 Compatible)
 - **Containerization**: Docker, Kubernetes (K8s)
 - **DevOps**: Jenkins, ArgoCD
 
