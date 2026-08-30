@@ -38,3 +38,7 @@
 	path = faang-user_service
 	url = https://github.com/bormoley1983/faang-user_service
 	branch = dev-local
+[submodule "faang-hashtag_service"]
+	path = faang-hashtag_service
+	url = https://github.com/bormoley1983/faang-hashtag_service
+	branch = dev-local
