@@ -8,7 +8,7 @@ This repository serves as the **Main Entry Point** for the entire ecosystem, orc
 
 ## 🚀 Quick Start (Local Development)
 
-This platform is designed to be up and running with a single command using Docker Compose.
+The platform's shared infrastructure can be started with Docker Compose. Application services are built and run separately.
 
 ### Prerequisites
 - Docker & Docker Compose
@@ -18,7 +18,7 @@ This platform is designed to be up and running with a single command using Docke
 ### Installation
 ```bash
 # Clone the repository with all submodules
-git clone --recursive https://github.com/your-username/faang-main.git
+git clone --recursive https://github.com/bormoley1983/faang-main.git
 cd faang-main
 
 # Spin up the entire infrastructure (DBs, Brokers, Storage)
@@ -33,7 +33,9 @@ The system is composed of several specialized microservices communicating via **
 
 ### Microservices
 *   **[Account Service](./faang-account_service)**: User account management and balance.
+*   **[User Service](./faang-user_service)**: User profiles, subscriptions, goals, skills, events, recommendations, and premium access.
 *   **[Post Service](./faang-post_service)**: Text posts, image attachments (Minio), and hashtag indexing (Elasticsearch).
+*   **[Hashtag Service](./faang-hashtag_service)**: Reserved standalone hashtag service. It is currently a buildable scaffold and is not deployed; Post Service still owns active hashtag indexing.
 *   **[Notification Service](./faang-notification_service)**: Multi-channel notifications (Email, Telegram, SMS).
 *   **[Analytics Service](./faang-analytics_service)**: Real-time event tracking and statistics.
 *   **[Payment Service](./faang-payment_service)**: Transaction processing and currency exchange.
@@ -50,7 +52,7 @@ Contains Kubernetes manifests, database initialization scripts, and CI/CD utilit
 
 The platform includes CI workflows and a GitOps-oriented delivery pipeline for the account service.
 
-*   **CI**: Each service repository builds and tests pull requests and `dev-local` pushes.
+*   **CI**: Each service repository builds and tests pull requests and pushes to `dev-local`.
 *   **Delivery**: The root `Jenkinsfile` publishes an immutable account-service image and updates its Kustomize tag.
 *   **Deployment**: ArgoCD syncs manifests in `faang-infra/k8s`; Jenkins does not apply workloads directly.
 *   **Observability**: Integrated Spring Boot Actuator with readiness/liveness probes.
@@ -66,3 +68,7 @@ The platform includes CI workflows and a GitOps-oriented delivery pipeline for t
 - **DevOps**: Jenkins, ArgoCD
 
 > **Note:** The root `docker-compose.yaml` launches infrastructure only (PostgreSQL, Redis, Kafka, Elasticsearch, Kibana, MinIO). Application services are built and run per-service via their Gradle wrappers or Dockerfiles. See each service's README for local run instructions.
+
+### Hashtag Service status
+
+Hashtag Service is registered as a submodule and has an independent CI build, but it does not yet expose an API or provide a deployable Spring Boot application. It must not be added to Compose or Kubernetes until its runtime contract, storage ownership, health checks, Docker image, and integration with Post Service are implemented.
