@@ -4,14 +4,14 @@ services:
     image: postgres:18-alpine
     environment:
       - POSTGRES_USER=user
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=postgres
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+      - POSTGRES_DB=faang
     ports:
       - '5432:5432'
     volumes:
       - postgres_data:/var/lib/postgresql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U user -d postgres"]
+      test: ["CMD-SHELL", "pg_isready -U user -d faang"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -22,43 +22,48 @@ services:
       postgres:
         condition: service_healthy
     environment:
-      - PGPASSWORD=password
+      - PGPASSWORD=${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+      - POSTGRES_DB=faang
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
     volumes:
       - ./faang-infra/init-postgres.sh:/init-postgres.sh
     entrypoint: /bin/bash
     command: /init-postgres.sh
   
   redis:
-    image: redis:latest
+    image: redis:7.4-alpine
     ports:
       - "6379:6379"
       - "8001:8001"
   minio:
-    image: minio/minio:latest
+    image: minio/minio:RELEASE.2025-04-22T22-12-26Z
     ports:
       - '9000:9000'
       - '9001:9001'
     volumes:
-      -  ~/minio/data:/data
+      - minio_data:/data
     environment:
-      - MINIO_ROOT_USER=user
-      - MINIO_ROOT_PASSWORD=password
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER:?MINIO_ROOT_USER is required}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD:?MINIO_ROOT_PASSWORD is required}
     command: server --console-address :9001 /data
   
   createbuckets:
-    image: minio/mc:latest
+    image: minio/mc:RELEASE.2025-04-16T18-53-07Z
     depends_on:
       - minio
     entrypoint: >
       /bin/sh -c "
       sleep 10;
-      /usr/bin/mc config host add minio http://minio:9000 user password;
+      /usr/bin/mc config host add minio http://minio:9000 $$MINIO_ROOT_USER $$MINIO_ROOT_PASSWORD;
       /usr/bin/mc mb minio/corpbucket;
       /usr/bin/mc anonymous set public minio/corpbucket;
       exit 0;
       "
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER:?MINIO_ROOT_USER is required}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD:?MINIO_ROOT_PASSWORD is required}
   kafka:
-    image: apache/kafka:latest
+    image: apache/kafka:4.0.0
     ports:
       - "9092:9092"
     environment:
@@ -153,4 +158,6 @@ volumes:
   es_data:
     driver: local
   kb_data:
+    driver: local
+  minio_data:
     driver: local

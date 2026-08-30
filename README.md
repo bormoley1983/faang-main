@@ -58,9 +58,11 @@ The platform includes CI workflows and a GitOps-oriented delivery pipeline for t
 ---
 
 ## 🛠️ Tech Stack
-- **Backend**: Java 25, Spring Boot 4.0.2, Spring Cloud (Feign, Gateway)
-- **Database**: PostgreSQL (Relational), Redis (Cache/Messaging)
+- **Backend**: Java 25, Spring Boot 4.1.1, Spring Cloud (Feign, Gateway)
+- **Database**: PostgreSQL 18 (Relational), Redis (Cache/Messaging)
 - **Message Broker**: Apache Kafka
-- **Search & Storage**: Elasticsearch 9.2, Minio (S3 Compatible)
+- **Search & Storage**: Elasticsearch 9.3 / Kibana 9.2.4, Minio (S3 Compatible)
 - **Containerization**: Docker, Kubernetes (K8s)
 - **DevOps**: Jenkins, ArgoCD
+
+> **Note:** The root `docker-compose.yaml` launches infrastructure only (PostgreSQL, Redis, Kafka, Elasticsearch, Kibana, MinIO). Application services are built and run per-service via their Gradle wrappers or Dockerfiles. See each service's README for local run instructions.
