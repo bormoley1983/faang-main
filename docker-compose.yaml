@@ -63,7 +63,7 @@ services:
       - MINIO_ROOT_USER=${MINIO_ROOT_USER:?MINIO_ROOT_USER is required}
       - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD:?MINIO_ROOT_PASSWORD is required}
   kafka:
-    image: apache/kafka:4.0.0
+    image: apache/kafka:4.3.1
     ports:
       - "9092:9092"
     environment:
@@ -80,9 +80,10 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9093
     volumes:
       - kafka_data:/var/lib/kafka/data
-      - ./faang-infra/init-kafka.sh:/init-kafka.sh
+      - ./faang-infra/k8s/bootstrap/scripts/init-kafka.sh:/init-kafka.sh:ro
       - ./faang-infra/replay-analytics-dlt.sh:/replay-analytics-dlt.sh
     command: >
       sh -c "
@@ -92,7 +93,7 @@ services:
       wait"
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/lasticsearch:9.5.2
+    image: docker.elastic.co/elasticsearch/elasticsearch:9.5.2
     environment:
       - discovery.type=single-node
       - http.host=0.0.0.0
@@ -103,6 +104,7 @@ services:
       - reindex.remote.whitelist=localhost:9200
       - action.auto_create_index=true
       - node.store.allow_mmap=false
+      - ELASTICSEARCH_URL=http://localhost:9200
     ports:
       - 9200:9200
       - 9300:9300
@@ -118,7 +120,7 @@ services:
         - IPC_LOCK
     volumes:
       - es_data:/usr/share/elasticsearch/data
-      - ./faang-infra/init-elastic.sh:/init-elastic.sh
+      - ./faang-infra/k8s/bootstrap/scripts/init-elasticsearch.sh:/init-elasticsearch.sh:ro
     restart: unless-stopped
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:9200" ]
@@ -129,7 +131,7 @@ services:
       sh -c "
       /usr/local/bin/docker-entrypoint.sh elasticsearch &
       sleep 30 &&
-      /init-elastic.sh &&
+      /init-elasticsearch.sh &&
       wait"
 
   kibana:

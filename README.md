@@ -62,7 +62,7 @@ The platform includes CI workflows and a GitOps-oriented delivery pipeline for t
 ## 🛠️ Tech Stack
 - **Backend**: Java 25, Spring Boot 4.1.1, Spring Cloud (Feign, Gateway)
 - **Database**: PostgreSQL 18 (Relational), Redis (Cache/Messaging)
-- **Message Broker**: Apache Kafka
+- **Message Broker**: Apache Kafka 4.3.1
 - **Search & Storage**: Elasticsearch / Kibana 9.5.2, Minio (S3 Compatible)
 - **Containerization**: Docker, Kubernetes (K8s)
 - **DevOps**: Jenkins, ArgoCD
