@@ -2,3 +2,4 @@ DEVPLAN_*.md
 .env
 **/secret.yaml
 !**/secret.example.yaml
+*.crt
