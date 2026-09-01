@@ -1,4 +1,5 @@
-DEVPLAN_*.md
+.workdocs/
+WORKBENCH.md
 .env
 **/secret.yaml
 !**/secret.example.yaml
