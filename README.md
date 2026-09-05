@@ -34,7 +34,7 @@ The system is composed of several specialized microservices communicating via **
 ### Microservices
 *   **[Account Service](./faang-account_service)**: User account management and balance.
 *   **[User Service](./faang-user_service)**: User profiles, subscriptions, goals, skills, events, recommendations, and premium access.
-*   **[Post Service](./faang-post_service)**: Text posts, image attachments (Minio), and hashtag indexing (Elasticsearch).
+*   **[Post Service](./faang-post_service)**: Text posts, image attachments (S3), and hashtag indexing (Elasticsearch).
 *   **[Hashtag Service](./faang-hashtag_service)**: Reserved standalone hashtag service. It is currently a buildable scaffold and is not deployed; Post Service still owns active hashtag indexing.
 *   **[Notification Service](./faang-notification_service)**: Multi-channel notifications (Email, Telegram, SMS).
 *   **[Analytics Service](./faang-analytics_service)**: Real-time event tracking and statistics.
@@ -63,11 +63,11 @@ The platform includes CI workflows and a GitOps-oriented delivery pipeline for t
 - **Backend**: Java 25, Spring Boot 4.1.1, Spring Cloud (Feign, Gateway)
 - **Database**: PostgreSQL 18 (Relational), Redis (Cache/Messaging)
 - **Message Broker**: Apache Kafka 4.3.1
-- **Search & Storage**: Elasticsearch / Kibana 9.5.2, Minio (S3 Compatible)
+- **Search & Storage**: Elasticsearch / Kibana 9.5.2, S3 object storage (SeaweedFS)
 - **Containerization**: Docker, Kubernetes (K8s)
 - **DevOps**: Jenkins, ArgoCD
 
-> **Note:** The root `docker-compose.yaml` launches infrastructure only (PostgreSQL, Redis, Kafka, Elasticsearch, Kibana, MinIO). Application services are built and run per-service via their Gradle wrappers or Dockerfiles. See each service's README for local run instructions.
+> **Note:** The root `docker-compose.yaml` launches infrastructure only (PostgreSQL, Redis, Kafka, Elasticsearch, Kibana, S3 object storage). Application services are built and run per-service via their Gradle wrappers or Dockerfiles. See each service's README for local run instructions.
 
 ### Hashtag Service status
 

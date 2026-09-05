@@ -35,33 +35,49 @@ services:
     ports:
       - "6379:6379"
       - "8001:8001"
-  minio:
-    image: minio/minio:RELEASE.2025-04-22T22-12-26Z
+
+  seaweedfs-s3:
+    # Local S3-compatible object store for Post/Project/User services (DEP-042B).
+    # Single-node SeaweedFS using 'mini' mode (master + volume + filer + s3 in one process).
+    image: chrislusf/seaweedfs:4.45@sha256:fc9f76fa993ad69966ffeb2f65d0318fcae39c6f8e20cf68ef7b3a5cb97769e5
     ports:
-      - '9000:9000'
-      - '9001:9001'
+      - '9000:8333'   # S3 API (services default to http://localhost:9000)
+      - '8888:8888'   # Filer HTTP (optional, for browsing)
+    environment:
+      - AWS_ACCESS_KEY_ID=${S3_ACCESS_KEY:-user}
+      - AWS_SECRET_ACCESS_KEY=${S3_SECRET_KEY:-password}
     volumes:
-      - minio_data:/data
-    environment:
-      - MINIO_ROOT_USER=${MINIO_ROOT_USER:?MINIO_ROOT_USER is required}
-      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD:?MINIO_ROOT_PASSWORD is required}
-    command: server --console-address :9001 /data
-  
-  createbuckets:
-    image: minio/mc:RELEASE.2025-04-16T18-53-07Z
+      - seaweedfs_data:/data
+    command: ["mini", "-dir=/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s -o /dev/null http://localhost:8333 || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+
+  init-s3-buckets:
+    # Creates the required S3 buckets after SeaweedFS is ready (uses AWS CLI).
+    image: amazon/aws-cli@sha256:b6aeb95d19d7f5a8cae4eb814cb16739b6b2a4f2f46f427ada6a8c9a20d9881d
     depends_on:
-      - minio
-    entrypoint: >
-      /bin/sh -c "
-      sleep 10;
-      /usr/bin/mc config host add minio http://minio:9000 $$MINIO_ROOT_USER $$MINIO_ROOT_PASSWORD;
-      /usr/bin/mc mb minio/corpbucket;
-      /usr/bin/mc anonymous set public minio/corpbucket;
-      exit 0;
-      "
+      seaweedfs-s3:
+        condition: service_healthy
     environment:
-      - MINIO_ROOT_USER=${MINIO_ROOT_USER:?MINIO_ROOT_USER is required}
-      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD:?MINIO_ROOT_PASSWORD is required}
+      - S3_ENDPOINT=http://seaweedfs-s3:8333
+      - S3_ACCESS_KEY=${S3_ACCESS_KEY:-user}
+      - S3_SECRET_KEY=${S3_SECRET_KEY:-password}
+      - S3_BUCKET_NAME=corpbucket
+      - S3_AVATAR_BUCKET_NAME=user-avatars
+    entrypoint: ["sh", "-c"]
+    command: >
+      "aws configure set aws_access_key_id $$S3_ACCESS_KEY &&
+      aws configure set aws_secret_access_key $$S3_SECRET_KEY &&
+      aws configure set region us-east-1 &&
+      aws --endpoint-url $$S3_ENDPOINT s3api head-bucket --bucket $$S3_BUCKET_NAME 2>/dev/null ||
+      aws --endpoint-url $$S3_ENDPOINT s3 mb s3://$$S3_BUCKET_NAME &&
+      aws --endpoint-url $$S3_ENDPOINT s3api head-bucket --bucket $$S3_AVATAR_BUCKET_NAME 2>/dev/null ||
+      aws --endpoint-url $$S3_ENDPOINT s3 mb s3://$$S3_AVATAR_BUCKET_NAME &&
+      echo 'S3 buckets ready'"
+
   kafka:
     image: apache/kafka:4.3.1
     ports:
@@ -161,5 +177,5 @@ volumes:
     driver: local
   kb_data:
     driver: local
-  minio_data:
+  seaweedfs_data:
     driver: local
