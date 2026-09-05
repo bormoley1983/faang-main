@@ -25,7 +25,7 @@ This document is intentionally written as a runbook:
 - `ArgoCD` owns deployment synchronization.
 - `Jenkins` owns builds and manifest update automation.
 - `Harbor` is the preferred container registry platform.
-- `MinIO` remains a separate object store and can later be used by Harbor as S3-compatible backend storage.
+- `SeaweedFS` remains a separate object store and can later be used by Harbor as S3-compatible backend storage.
 
 ### Configuration model
 
@@ -96,7 +96,7 @@ The cluster will use already-running infrastructure discovered via DNS:
 - `redis-main`
 - `kafka-main`
 - `elasticsearch-main`
-- `minio-main`
+- `s3-main`
 
 These names may also resolve with the homelab domain, for example:
 
@@ -139,7 +139,7 @@ kubectl exec dns-test -- nslookup postgres-main
 kubectl exec dns-test -- nslookup redis-main
 kubectl exec dns-test -- nslookup kafka-main
 kubectl exec dns-test -- nslookup elasticsearch-main
-kubectl exec dns-test -- nslookup minio-main
+kubectl exec dns-test -- nslookup s3-main
 kubectl delete pod dns-test
 ```
 
@@ -148,7 +148,7 @@ If you want to verify HTTP endpoints:
 ```powershell
 kubectl run curl-test --image=curlimages/curl --restart=Never --command -- sleep 3600
 kubectl exec curl-test -- curl -I http://elasticsearch-main:9200
-kubectl exec curl-test -- curl -I http://minio-main:9000
+kubectl exec curl-test -- curl -I http://s3-main:9000
 kubectl delete pod curl-test
 ```
 
@@ -183,7 +183,7 @@ Bootstrap tasks should not run on every sync:
 - create PostgreSQL database and schemas
 - create Kafka topics
 - create Elasticsearch indices
-- create MinIO buckets and policies if needed
+- create S3 buckets and policies if needed
 
 Regular deployment should only do:
 
@@ -231,11 +231,11 @@ Harbor gives more than raw image storage:
 - image retention and governance
 - easier team-friendly registry management
 
-### Role of MinIO
+### Role of S3 object storage
 
-MinIO stays separate.
+S3 object storage stays separate from the registry.
 
-Harbor may later use MinIO as backend object storage, but MinIO itself is not the registry service.
+Harbor may later use an S3-compatible store as backend object storage, but the object store itself is not the registry service.
 
 ### Short-term note
 
@@ -284,7 +284,7 @@ Fix at least these areas:
 
 - bad environment variable wiring
 - wrong ports
-- `S3_*` vs `MINIO_*`
+- unified `S3_*` environment variable wiring
 - service-to-service host and port values
 - `POSTGRES_PORT` reference bug in `achievement-service`
 - placeholder secret usage in `base`
@@ -356,7 +356,7 @@ To show knowledge and architecture maturity, document these clearly:
 - database init
 - Kafka topics
 - Elasticsearch index
-- MinIO bucket setup
+- S3 bucket setup
 
 ### 5. Secrets policy
 
